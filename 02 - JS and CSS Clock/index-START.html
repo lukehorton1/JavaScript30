@@ -63,12 +63,42 @@
       background: black;
       position: absolute;
       top: 50%;
+      rotate: 90deg; /* rotate 90 degrees by default so it starts at 12 oclock */
+      transform-origin: right;
     }
 
   </style>
 
   <script>
 
+    // get time 
+    const now = new Date()
+    let hours = now.getHours() // use let for hours so we can overwrite it to get 12 hour format
+    if (hours > 12) { // converts 13 hours into 1 hours for clock face. 
+      hours = hours - 12 
+    }
+    const minutes = now.getMinutes()
+    const seconds = now.getSeconds()
+
+    // calculate degrees from hours/minutes/seconds and assign 
+    const hourHandDeg = (hours/12)*360 // hour hand will only be precise to the hour (i.e. will show exactly 9, even if it's 9:30)
+    const minuteHandDeg = (minutes/60)*360
+    const secondHandDeg = (seconds/60)*360
+    
+    // assign our elements using their css classes to local variables (they end with El, signifying they're an element)
+    const hourHandEl = document.querySelector(".hour-hand") 
+    const minuteHandEl = document.querySelector(".min-hand")
+    const secondHandEl = document.querySelector(".second-hand")
+
+    // check degrees in console that its correct 
+    console.log(hourHandDeg)
+    console.log(minuteHandDeg)
+    console.log(secondHandDeg)
+
+    // map our degrees to our hand elements
+    hourHandEl.style.transform = `rotate(${hourHandDeg}deg)` // backticks and ${} are like python's f-strings. 
+    minuteHandEl.style.transform = `rotate(${minuteHandDeg}deg)`
+    secondHandEl.style.transform = `rotate(${secondHandDeg}deg)`
 
   </script>
 </body>
