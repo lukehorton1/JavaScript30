@@ -59,7 +59,31 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
+// styles key press for 1 second, takes keyElement as argument to apply styling. 
+async function styleKeyPress(keyElement, duration) {
+  console.log("waiting")
+  keyElement.classList.add("playing"); // add 'playing' class so is styled by css
+  await sleep(duration);
+  keyElement.classList.remove("playing") // replace 'playing' class so its removed. 
+  console.log("done")
+}
+
+window.addEventListener("keydown", function (e) {
+  const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`) // backticks are equivalent of f string
+  if (!audio) return; // stop the function from running if key pressed does not match audio keys
+  console.log(e); 
+  audio.currentTime = 0; // rewind to start of .wav file on each function call. 
+  audio.play()
+  const keyElement = document.querySelector(`div[data-key="${e.keyCode}"]`)
+  console.log(keyElement)
+  styleKeyPress(keyElement, 300);
+
+
+})
 </script>
 
 
