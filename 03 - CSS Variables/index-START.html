@@ -10,22 +10,32 @@
 
   <div class="controls">
     <label for="spacing">Spacing:</label>
-    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px" onchange="setProperties()">
 
     <label for="blur">Blur:</label>
-    <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
+    <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px" onchange="setProperties()">
 
     <label for="base">Base Color</label>
-    <input id="base" type="color" name="base" value="#ffc600">
+    <input id="base" type="color" name="base" value="#ffc600" onchange="setProperties()">
   </div>
 
-  <img src="https://unsplash.it/800/500?image">
+  <img src="https://unsplash.it/800/500?image" class="unsplashImage">
 
   <style>
 
     /*
       misc styles, nothing to do with CSS variables
     */
+
+    :root {
+      --spacing: 10px;
+      --blur: 10px;
+      --base: #123abc; /* setup variables using -- and set defaults */
+    }
+
+    .hl {
+      color: var(--base);
+    }
 
     body {
       text-align: center;
@@ -40,12 +50,33 @@
       margin-bottom: 50px;
     }
 
+    .unsplashImage {
+      /* reference variables with var(--variable_name) */
+      filter: blur(var(--blur))
+    }
+
     input {
       width: 100px;
     }
   </style>
 
   <script>
+    // Get the root element
+
+    // Get the values from our HTML input components 
+    controlsEl = document.querySelector(".controls")
+    baseEl = document.querySelector("div[class='controls'] input[id='base']") // get the input with id='spacing' within the div with class 'controls'
+    blurEl = document.querySelector("div[class='controls'] input[id='blur']")
+
+    // set css variable properties based on slider or colour picker inputs
+    function setProperties() {
+      r = document.querySelector(":root") // get the root element
+      r.style.setProperty("--base", baseEl.value) 
+      r.style.setProperty("--blur", blurEl.value+"px") // css expects numbers with px after, so add px here
+      console.log(baseEl.value)
+      console.log(blurEl.value)
+
+    }
   </script>
 
 </body>
