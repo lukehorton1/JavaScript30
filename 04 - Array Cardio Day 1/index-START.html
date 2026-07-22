@@ -38,17 +38,125 @@
     
     // Array.prototype.filter()
     // 1. Filter the list of inventors for those who were born in the 1500's
+    
+    // you specify the filters to apply in a function. You can do this in a few ways
+    // Defining the function first:
+    function bornIn1500s(inventors) {
+      if (inventors.year >= 1500 && inventors.year < 1600) {
+        return true;
+      }
+    }
+    const inventorsBornIn1500sFunctionFirst = inventors.filter(bornIn1500s)
+    
+    // Defining the function in line 
+    const inventorsBornIn1500sFunctionInLine = inventors.filter(function bornIn1500sInLine(inventors) {
+      if (inventors.year >= 1500 && inventors.year < 1600) {
+        return true;
+      }
+    })
+
+    // Using an arrow function (replace 'function bornIn1500s(inventors)' with '(inventors) => {[function body]}')
+    const inventorsBornIn1500sArrowFunction = inventors.filter((inventors) => {if (inventors.year >= 1500 && inventors.year < 1600) {return true}})
+    // You can also remove the if and return as filter will just keep rows where the given function evaluates to true
+    const inventorsBornIn1500sArrowFunctionNoIf = inventors.filter((inventors) => {inventors.year >= 1500 && inventors.year < 1600})
+
+    console.log("Inventors born in the 1500s")
+    console.table(inventorsBornIn1500sArrowFunction) // console.table is more useful than console.log sometimes for displaying arrays. 
 
     // Array.prototype.map()
     // 2. Give us an array of the inventors first and last names
+    // map allows us to apply a function to each element, similar to .apply() in Python
+    
+    // With separate function:
+    function splitNames(inventors) {
+      return inventors.first + " " + inventors.last
+    }
+    inventorsFullNames = inventors.map(splitNames)
+
+    inventorsFullNamesInLine = inventors.map((inventors) => {return inventors.first + " " + inventors.last})
+
+    console.log("Inventors full names")
+    console.table(inventorsFullNamesInLine)
 
     // Array.prototype.sort()
     // 3. Sort the inventors by birthdate, oldest to youngest
+    // we can simply sort a single dimension array like people using .toSorted() or toReversed().
+    // we could also use .sort() or .reverse() - but this modifies the original array so I've commented these out. 
+    console.log("People sorted")
+    console.log(people.toSorted())
+    // console.log(people.sort())
+    console.log("People sorted in reverse")
+    // console.log(people.reverse())
+    console.log(people.toReversed())
+
+    // However if we want to sort using a custom sort order, we may need a custom function. We can give the .sort() function a custom function as a parameter. 
+    // The function should look at items a and b, and compare them, and return 1 if a is greater than b, (i.e. +1 in the position order), or -1 if its less than, or 0 if equal to
+
+    // so to sort oldest to youngest on birth date we could use this function:
+    function reverseAgeOrder(a, b) {
+      if (a.year < b.year) {
+        return -1
+      } else if (a.year === b.year) { // NOTE: Comparisons use ===, using = will cause some years to be assigned to each other 
+        return 0 
+      } else {
+        return 1
+      }
+    }
+    console.log("Inventors in reverse age order")
+    console.table(inventors.toSorted(reverseAgeOrder))
+
+    // or as an arrow function if you're mad. 
+    const inventorsReverseAge = inventors.toSorted((a, b) => {if (a.year < b.year) {return -1} else if (a.year === b.year) {return 0} else {return 1}})
+
+    // or even more advanced is to use an arrow function with a ternary if statement (basically a shortened if statement) like so
+    const inventorsReverseAgeTernary = inventors.toSorted((a, b) => a.year > b.year ? 1 : a.year === b.year ? 0 : -1)
+
+    // console.table(inventorsReverseAge)
+
 
     // Array.prototype.reduce()
-    // 4. How many years did all the inventors live all together?
+    // 4. How many years did all the inventors live all together? (the question is asking for the total number of years lived by all inventors)
+    // You can use a reduce function the same way you'd loop for an array. 
+    // The reduce means we're just applying that function to each element in the array. 
+
+    // For example, we can find out how many years did all the inventors live in total like so:
+    let totalYears = 0
+
+    for (var i = 0; i < inventors.length; i++) {
+      totalYears += (inventors[i].passed - inventors[i].year)
+    }
+
+    console.log("Total Years (loop method)")
+    console.log(totalYears)
+
+    // Or we could make a function and pass this into reduce. 
+    function sumYearsLived(totalYears, inventors) { // first argument is the running total, second argument is the value used in the function which we can add 
+      // in this case we pass inventors, so we can use inventors.year and inventors.passed. Otherwise we could just pass year
+      return totalYears += (inventors.passed - inventors.year) // add years to our running total
+    }
+
+    let totalYearsReduce = 0 
+    totalYearsReduce = inventors.reduce(sumYearsLived, 0) // the second argument of reduced is always the initial value we want to start counting from
+    console.log("Total Years (reduce method)")
+    console.log(totalYearsReduce)
+
+    // NOTE: Watch video to learn how to use REDUCE() in question 4, and finish off Reduce Exercise 8. Also see what he does for the wikipedia question 6. 
+
 
     // 5. Sort the inventors by years lived
+    // Use map for this, and apply a function to calculate years lived like we would with .apply() in python
+    console.table(inventors)
+    function calculateYearsLived(inventors) {
+      return {
+        first: inventors.first, 
+        last: inventors.last, 
+        year: inventors.year, 
+        passed: inventors.passed,
+        yearsLived: inventors.passed - inventors.year 
+      }
+    }
+    const inventorsYearsLived = inventors.map(calculateYearsLived)
+    console.table(inventorsYearsLived)
 
     // 6. create a list of Boulevards in Paris that contain 'de' anywhere in the name
     // https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris
@@ -57,9 +165,55 @@
     // 7. sort Exercise
     // Sort the people alphabetically by last name
 
+    // create mapping function 
+    function splitPeopleNames(people) {
+      return {
+        first: people.split(", ")[0],
+        last: people.split(", ")[1]
+      }
+    }
+    // apply mapping function 
+    let peopleFullNames = people.map(splitPeopleNames)
+  
+    // sort people alphabetically by last name
+    peopleFullNames.sort((a, b) => {if (a.last > b.last) {return 1} else if (a.last < b.last) {return -1} else {return 0}})
+    console.table(peopleFullNames)
+
     // 8. Reduce Exercise
     // Sum up the instances of each of these
     const data = ['car', 'car', 'truck', 'truck', 'bike', 'walk', 'car', 'van', 'bike', 'walk', 'car', 'van', 'car', 'truck' ];
+
+    // instances of car using function
+    function countCars(total, data) {
+      return total += 1 ? data === 'car' : 0 // uses inline if else. Similar to: '1 if data == 'car' else 0' in python. Think of '?' being if and ':' being else
+    }    
+    
+    const carCount = data.reduce(countCars, 0) // start at 0 and use countCars function
+    console.log("Car count")
+    console.log(carCount)
+
+    // instances of truck using arrow function
+    const truckCount = data.reduce((total, data) => {return total += 1 ? data === 'truck' : 0}, 0) // dont forget to put 0 as the initial value at the end (value to start counting from)
+    console.log("Truck count")
+    console.log(truckCount)
+
+    const vanCount = data.reduce((total, data) => total += 1 ? data === 'van' : 0, 0) // we can also remove the curly brackets to use implicit returns
+    console.log("Van count")
+    console.log(vanCount)
+
+    // Finally, we could create a function which takes the data and the item to count as arguments and returns the result
+    function countItems(data, item) {
+      return data.reduce((total, data) => total += 1 ? data === item : 0, 0)
+    }
+
+    const bikeCount = countItems(data, item='bike')
+    console.log("Bike count")
+    console.log(bikeCount)
+
+    const walkCount = countItems(data, 'walk')
+    console.log("Walk count")
+    console.log(walkCount)
+
 
   </script>
 </body>
