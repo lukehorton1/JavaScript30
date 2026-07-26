@@ -161,6 +161,34 @@
     // 6. create a list of Boulevards in Paris that contain 'de' anywhere in the name
     // https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris
 
+    const listEl = document.querySelector(".mw-category-group")
+    console.log(listEl) 
+    // Start by getting the element using query select, then getting all <a> (link) elements, and getting the text content of each so we can get a list of boulevard names. 
+
+    // To run below, go to wikipedia website, open dev tools, and run the below javascript in the console on that website. 
+    // To get the dom elements we used inspect element and got the div names. 
+    // 
+    const category = document.querySelector('.mw-category'); // list of divs
+    const links = Array.from(category.querySelectorAll('a')); // creates array of links within those divs by looking for <a></a>. 
+    // each of these look like <a href="/wiki/Boulevards_of_Paris" title="Boulevards of Paris">Boulevards of Paris</a>
+
+    const boulevards = links.map((link) => {return link.innerText}) // use a map to apply a function which returns the inner text from each <a> element. 
+    // this is now an array of boulevard names
+
+    // we can then filter this array for boulevards only containing 'de'  
+    let deBoulevards = boulevards.filter((boulevard) => {if (boulevard.includes("de")) {return true}})
+    console.log(deBoulevards)
+
+    // or more concisely
+    let deBoulevardsShort = boulevards.filter((boulevard) => boulevard.includes("de")) 
+    console.log(deBoulevardsShort)
+
+    // NOTE: however, something like:
+    // let deBoulevards = boulevards.filter((boulevard) => {boulevard.includes("de")})
+    // will not work, since i've included the short hand if statement in curly brackets, it doesn't return anything unless you tell it to.
+    // Hence why i've returned true in the longer version, and left the curly brackets out in the concise version which uses implicit returns
+
+    // NOTE: Could come back to this when I'm a bit more familiar with the DOM. Or just skip the DOM part and do the sorting, as can learn DOM later. 
 
     // 7. sort Exercise
     // Sort the people alphabetically by last name
