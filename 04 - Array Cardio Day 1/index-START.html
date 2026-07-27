@@ -58,7 +58,7 @@
     // Using an arrow function (replace 'function bornIn1500s(inventors)' with '(inventors) => {[function body]}')
     const inventorsBornIn1500sArrowFunction = inventors.filter((inventors) => {if (inventors.year >= 1500 && inventors.year < 1600) {return true}})
     // You can also remove the if and return as filter will just keep rows where the given function evaluates to true
-    const inventorsBornIn1500sArrowFunctionNoIf = inventors.filter((inventors) => {inventors.year >= 1500 && inventors.year < 1600})
+    const inventorsBornIn1500sArrowFunctionNoIf = inventors.filter((inventors) => inventors.year >= 1500 && inventors.year < 1600)
 
     console.log("Inventors born in the 1500s")
     console.table(inventorsBornIn1500sArrowFunction) // console.table is more useful than console.log sometimes for displaying arrays. 
