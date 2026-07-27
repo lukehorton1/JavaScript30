@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Flex Panels 💪</title>
   <link href='https://fonts.googleapis.com/css?family=Amatic+SC' rel='stylesheet' type='text/css'>
-  <link rel="icon" href="https://fav.farm/🔥" />
+  <link rel="icon" href="https://fav.farm/✅" />
 </head>
 <body>
   <style>
@@ -27,6 +27,7 @@
     .panels {
       min-height: 100vh;
       overflow: hidden;
+      display: flex;
     }
 
     .panel {
@@ -44,6 +45,10 @@
       font-size: 20px;
       background-size: cover;
       background-position: center;
+      flex: 1;
+      justify-content: center;
+      display: flex;
+      flex-direction: column;
     }
 
     .panel1 { background-image: url(https://images.unsplash.com/photo-1443891238287-325a8fddd0f7?w=1500&h=1500); }
@@ -52,12 +57,21 @@
     .panel4 { background-image: url(https://images.unsplash.com/photo-1442522772768-9032b6d10e3e?w=1500&h=1500); }
     .panel5 { background-image: url(https://images.unsplash.com/photo-1465156799763-2c087c332922?w=1500&h=1500); }
 
-    /* Flex Children */
+    /* Flex Items */
     .panel > * {
       margin: 0;
       width: 100%;
       transition: transform 0.5s;
+      flex: 1 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
+
+    .panel > *:first-child { transform: translateY(-100%); }
+    .panel.open-active > *:first-child { transform: translateY(0); }
+    .panel > *:last-child { transform: translateY(100%); }
+    .panel.open-active > *:last-child { transform: translateY(0); }
 
     .panel p {
       text-transform: uppercase;
@@ -71,9 +85,15 @@
     }
 
     .panel.open {
+      flex: 5;
       font-size: 40px;
     }
 
+    @media only screen and (max-width: 600px) {
+      .panel p {
+        font-size: 1em;
+      }
+    }
   </style>
 
 
@@ -106,6 +126,28 @@
   </div>
 
   <script>
+    const panels = document.querySelectorAll('.panel'); // gives a nodelist of each panel, i.e. panels 1 through 5
+    console.log(panels)
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // now we have set up the panel.open and panel.open-active css classes. We need to toggle them using javascript functions. 
+    // We can toggle these when you hover over one of the panels using an event listener. We can can tie the event to the DOM elements we got from our querySelectorAll above. 
+    panels.forEach(panel => {
+      panel.addEventListener("mouseenter", (event) => {
+        panel.classList.add("open")
+        panel.classList.add("open-active")
+      })
+      panel.addEventListener("mouseleave", (event) => {
+        panel.classList.remove("open-active")
+        panel.classList.remove("open")
+      })
+    });
+
+    console.log(panels[0])
+
 
   </script>
 
