@@ -18,6 +18,112 @@
 <script>
 const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
+const cities = []; // create our array to store the data
+
+// We're using the newly implemented native 'fetch' method, other methods include jquery.
+fetch(endpoint) // 'fetch' doesn't return the data, but a promise, we can use .then() to perform actions on the data when it arrives
+  .then(blob => blob.json()) // blob is just an arbitrary name, we can call it what we want. The .then() means that when the data lands, we convert it to json format using .json()
+  .then(data => cities.push(...data)) // .json() still returns a promise, so we use another .then() to perform our final manipulation which is to 'push' it into our array. Again, 'data' is an arbitrary name
+  // We use '...' to 'spread' or 'unpack' the array, so items are added individually like [1, 2, 3] rather than [[1, 2, 3]] 
+
+  // NOTE: If we just used fetch without await, then it will appear like cities array is empty in the console, as it won't have finished loading by the time we log it in the console.
+  // Instead, we will use the fetch in an 'async' function with 'await', that way we can make the rest of the code wait until the async function has finished executing before continuing. 
+
+// instead, paste these in the dev tools console once the above has got a chance to finish running. 
+console.log(cities)
+console.table(cities)
+
+
+async function getCities(endpoint) {
+  const blob = await fetch(endpoint); // get endpoint, wait till promise received before continuing
+  const data = await blob.json(); // convert to json, wait till conversion finished before continuing
+
+  cities.push(...data) // now we can push to our array and display immediately in console below
+
+  console.log(cities) // we can display inside this function as we're awaiting the lines above, but if we displayed outside the function it wouldnt work as the rest of the code would have continued whilst the function was executing. A better solution is .then()
+  console.table(cities)
+}
+
+// getCities(endpoint)
+
+// Since we created a placeholder array, and the .json() will arrive within 100-300ms anyway, we can safely start filtering on it when the user starts typing. 
+// if the array has not arrived yet, it will just appear like there is no results as we'll be filtering on an empty array. 
+
+
+// Get the elements we'll be using from the DOM 
+const suggestionsEl = document.querySelector(".suggestions")
+const searchEl = document.querySelector(".search")
+
+// example of making a list element and populating... 
+let listItemTest = document.createElement("li"); // create an empty list element which we can populate
+listItemTest.textContent = "Start typing to get started..." // populate the list element by assigning a value to its textContent
+suggestionsEl.appendChild(listItemTest)
+
+// function to get search results
+function getSearchResults(term) {
+    let results = cities.filter((cities) => cities.city.toLowerCase().includes(term.toLowerCase())) // .includes() is case sensitive, so we apply toLowerCase() to the search term and the array when filtering
+    return results
+}
+
+// function to populate search results in the DOM using the get results helper and elements defined above. 
+function populateSearchResults(term) {
+  suggestionsEl.innerHTML = '' // empty suggestions when populating new results (i.e. when search element event listener fires
+  if (term) {
+    results = getSearchResults(term) // get results using helper
+  
+    results.forEach(element => { // loop through results and create an element for each one
+      let listItem = document.createElement("li")
+      listItem.textContent = element.city // assign the city name to the text content of our newly created element
+      suggestionsEl.appendChild(listItem) // append this element to our list (suggestionsEl) element
+    })
+    if (results.length === 0) { // if no results found, or if no search term entered, then display placeholders
+      let noResultsPlaceholder = document.createElement("li")
+      noResultsPlaceholder.textContent = "No Results"
+      suggestionsEl.appendChild(noResultsPlaceholder)
+    }
+  } else {
+    let placeholder = document.createElement("li")
+    placeholder.textContent = "Start typing to get started..."
+    suggestionsEl.appendChild(placeholder)
+
+  }
+}
+
+
+populateSearchResults(term='') // run the populate function once with an empty search term so that the placeholders are populated. 
+searchEl.addEventListener("input", (event) => populateSearchResults(searchEl.value)) // any time the input in the search element changes, we re-execute the populateSearchResults function, passing the element value as the search term. 
+// we could also do 
+// searchEl.addEventListener("input", (e) => console.log(e.target.value)) // where event is shortened to value, and we reference the event passed to the callback rather than the element name
+
+// --------------
+
+// DOM-efficient version using .map() and template literals. 
+// This is more efficient as the populateSearchResults() function uses a loop which could redraw DOM 500 times if there's 500 results. But is fine for smaller arrays
+// websos's displayMatches() method is more common practice, and makes a big HTML string and displays this in the DOM, meaning only one DOM redraw
+function displayMatches(term) {
+  if (!term) {
+    suggestionsEl.innerHTML = '<li>Start typing to get started...</li>';
+    return;
+  }
+
+  const results = getSearchResults(term);
+
+  if (results.length === 0) {
+    suggestionsEl.innerHTML = '<li>No Results</li>';
+    return;
+  }
+
+  // 1. Transform the array of data into an array of HTML string items
+  // 2. .join('') glues the array into one single string
+  const html = results.map(item => `<li>${item.city}</li>`).join('');
+
+  // 3. Update the DOM once (1 reflow instead of hundreds)
+  suggestionsEl.innerHTML = html;
+}
+
+// searchEl.addEventListener("input", (event) => displayMatches(searchEl.value)) // any time the input in the search element changes, we re-execute the populateSearchResults function, passing the element value as the search term. 
+
+
 </script>
 </body>
 </html>
