@@ -3,11 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <title>HTML5 Canvas</title>
-  <link rel="icon" href="https://fav.farm/🔥" />
+  <link rel="icon" href="https://fav.farm/✅" />
 </head>
 <body>
 <canvas id="draw" width="800" height="800"></canvas>
 <script>
+
+const canvas = document.querySelector('#draw'); // canvas is where we add our event listeners to
+const ctx = canvas.getContext('2d'); // context is the thing you're actually drawing on
+
+// set out canvas widths to match the window size
+canvas.width = window.innerWidth; 
+canvas.height = window.innerHeight;
+
+// set styles for the context (what we're using to draw)
+ctx.strokeStyle = '#BADA55';
+ctx.lineJoin = 'round'; // when a line meets another line have rounded edges
+ctx.lineCap = 'round'; // when a line ends have a rounded edge
+ctx.lineWidth = 100;
+// ctx.globalCompositeOperation = 'multiply';
+
+let isDrawing = false; // this is the flag we'll interact with to determine whether our cursor should be drawing/painting or not. I.e. when mouse down, draw, when mouse up, don't draw. 
+let lastX = 0; // the starting point of our line. We need to remember the coordinates where you start drawing (and then we draw the pixels between the start and end points)
+let lastY = 0;
+let hue = 0;
+
+// listen for mouse events and call draw() function and toggle isDrawing flags. (CLICK AND DRAG FUNCTIONALITY)
+
+function draw(e) {
+  if (!isDrawing) return; // return when mouse is not pressed down to escape the draw function. 
+  console.log(e)
+  // now add the lines to draw on the context (which we assigned to 'ctx')
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY); // begin the drawing at the position we stored as the last cursor position before mousedown
+  ctx.lineTo(e.offsetX, e.offsetY); // make a line between the previous cursor position and the new cursor position. 
+  ctx.stroke(); // stroke is the commanmd that draws our path. 
+
+  let distance = Math.abs((lastX - e.offsetX)) + Math.abs((lastY - e.offsetY)) // calculate distance of the mouse movement so we can use for styling
+  // update our lastX and lastY once we finished drawing so it knows where to start next time. 
+  lastX = e.offsetX;
+  lastY = e.offsetY;
+  // increment our hue, the first number can start at 0, and go right through to 359 and back to 0, to cycle through the rainbow
+  hue = hue + 1
+  // or do hue++ to increment 
+  // reset to 0 if it ticks over 360 
+  if (hue >= 360) {
+    hue = 0
+  }
+
+  ctx.strokeStyle = `hsl(${hue}, 100%, 50%`; // use the equivalent of an f-string to assign the strokeStyle to a hsl value (see more on hsl here: https://mothereffinghsl.com)
+  ctx.lineWidth = 50 + distance // increase line width for larger distances between mouse movements (faster mouse movements), i've used a base width of 50
+
+}
+
+canvas.addEventListener('mousedown', (e) => {
+  // also update our last X and Y when clicking down before executing the draw function. 
+  lastX = e.offsetX;
+  lastY = e.offsetY;
+  isDrawing = true;
+
+}); // enable the isDrawing flag if mouse down. 
+
+
+canvas.addEventListener('mousemove', draw); // call the draw function on mouse movement (this returns if not mouse not clicked)
+canvas.addEventListener('mouseup', () => isDrawing = false);
+canvas.addEventListener('mouseout', () => isDrawing = false); // disable drawing when mouse leaves the screen (in case you mouse off the screen, when you come back it will still think you're clicked down)
+
 </script>
 
 <style>
