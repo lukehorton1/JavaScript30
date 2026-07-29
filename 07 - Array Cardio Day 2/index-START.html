@@ -18,7 +18,7 @@
     ];
 
     const comments = [
-      { text: 'Love this!', id: 523423 },
+      { text: 'Love this!', id: 123456 },
       { text: 'Super good', id: 823423 },
       { text: 'You are the best', id: 2039842 },
       { text: 'Ramen is my fav food ever', id: 123523 },
@@ -27,15 +27,58 @@
 
     // Some and Every Checks
     // Array.prototype.some() // is at least one person 19 or older?
+
+    // function to take birth year, and subtract from current year to determine if the person is 19 
+    function isAge19(person) {
+      currentYear = (new Date().getFullYear()) // javascript way to get year
+      if (currentYear - person.year > 19) {return true}
+    }
+    const isSomeoneAge19 = people.some(isAge19)
+    console.log(isSomeoneAge19)
+
     // Array.prototype.every() // is everyone 19 or older?
+    const isEveryoneAge19 = people.every(isAge19)
+    console.log(isEveryoneAge19)
 
     // Array.prototype.find()
     // Find is like filter, but instead returns just the one you are looking for
     // find the comment with the ID of 823423
-
+    // essentially this just returns the first element that matches what you're searching for. So we could find the first comment that matches id 823423, even if there are multiple
+    const comment823423 = comments.find((comment) => comment.id === 823423) // NOTE: Remember equal to is three '='s 
+    console.log(comment823423)
+    // or if we just wanted the text we could do 
+    console.log(comment823423.text)
+    
     // Array.prototype.findIndex()
     // Find the comment with this ID
-    // delete the comment with the ID of 823423
+    // we can use find index to find the position of a certain element in our array. We can then use this to delete it 
+    const comment823423position = comments.findIndex((comment) => comment.id === 823423)
+    console.log()
+    console.log({comment823423position}) 
+
+    console.log("Comments before removal:")
+    console.log(comments)
+
+    // delete the comment with the ID of 823423  
+    comments.splice(comment823423position, 1) // remove 1 element at given index given by comment823423position variable 
+    // remember that splice works inplace. It can also be used to replace elements if we passed a third argument with what we want to replace it with. 
+
+    console.log("Comments after removal:")
+    console.log(comments)
+
+    // Another method of removing an element, is to create a new array without that element by using slices. #
+    
+    const comment2039842position = comments.findIndex((comment) => comment.id === 2039842)
+
+    // We're essentially getting two slices of the array before and after the index position, and spreading the two arrays using '...' and combining them into our new array
+    const newComments = [
+      ...comments.slice(0, comment2039842position),
+      ...comments.slice(comment2039842position+1) // second argument in slice defaults to array.length, so this is the same as .slice(comment2039842position+1, comments.length)
+    ]
+
+    console.log("New comments after removing comment id 2039842:")
+    console.log(newComments)
+    
 
   </script>
 </body>
