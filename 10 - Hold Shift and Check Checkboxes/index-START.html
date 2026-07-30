@@ -102,33 +102,47 @@
   // console.dir(checkboxes[0]) // find out how to get value from checkbox
 
   let shiftKeyPressed = false
+  let lastChecked = 0
+  let justChecked = 0
+
   window.addEventListener("keydown", (e) => {if (e.shiftKey) {shiftKeyPressed = true} else {shiftKeyPressed = false}})
   window.addEventListener("keyup", (e) => {if (e.shiftKey) {shiftKeyPressed = true} else {shiftKeyPressed = false}})
+  let i = 0
   checkboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", fillCheckboxes)
+    checkbox.addEventListener("change", fillCheckboxes) // add an event listener to each checkbox which calls the fillCheckboxes() function
+    checkbox.setAttribute("id", i) // add numbered ids to each checkbox so we know which has been checked. 
+    i = i + 1
   })
-
 
   console.log(checkboxes)
 
   function fillCheckboxes(e) {
-    console.log(e.shiftKey)
+
+    // get the values of each checkbox in an array. Updates with each checkbox change
+    const checkboxValues = Array.from(checkboxes).map((checkbox) => (checkbox.checked))
+    console.log(checkboxValues)
+
+    lastChecked = justChecked // assign old justChecked variable to lastChecked
+    justChecked = Number(e.target.id) // assign new justChecked variable to the element id. 
+    // NOTE: Must convert .id to Number, as by default HTML elements will give you a string. Otherwise it adds a string and a number. like "2" + 1 = 21. 
+
+  
     if (shiftKeyPressed) {
-      // get the values of each checkbox in an array. Updates with each checkbox change
-      const checkboxValues = Array.from(checkboxes).map((checkbox) => (checkbox.checked))
-      console.log(checkboxValues)
-
-      // gets the index position in the array of the first and last checked checkbox (where checked === true)
-      let firstCheckbox = checkboxValues.findIndex((checkbox) => checkbox === true)
-      let lastCheckbox = checkboxValues.findLastIndex((checkbox) => checkbox === true)
-      // console.log(firstCheckbox)
-      // console.log(lastCheckbox)
-
+      console.log(`lastChecked: ${lastChecked}`)
+      console.log(`justChecked: ${justChecked}`)
       // loop through each position between the index position of the two checkboxes, and check them. 
-      for (let step = firstCheckbox+1; step < lastCheckbox; step++) {
-        console.log(step)
-        checkboxes[step].checked = true
+      if (lastChecked < justChecked) {
+        for (let step = lastChecked+1; step < justChecked; step++) {
+          console.log(`step: ${step}`)
+          checkboxes[step].checked = true
+        }
+      } else {
+        for (let step = justChecked+1; step < lastChecked; step++) {
+          console.log(`step: ${step}`)
+          checkboxes[step].checked = true
+        }
       }
+
     } else {
       console.info("Shift key not pressed")
     }
