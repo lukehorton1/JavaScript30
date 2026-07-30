@@ -97,6 +97,49 @@
   </div>
 
 <script>
+
+  const checkboxes = document.querySelectorAll(".item input") // get checkbox elements as a nodeList
+  // console.dir(checkboxes[0]) // find out how to get value from checkbox
+
+  let shiftKeyPressed = false
+  window.addEventListener("keydown", (e) => {if (e.shiftKey) {shiftKeyPressed = true} else {shiftKeyPressed = false}})
+  window.addEventListener("keyup", (e) => {if (e.shiftKey) {shiftKeyPressed = true} else {shiftKeyPressed = false}})
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", fillCheckboxes)
+  })
+
+
+  console.log(checkboxes)
+
+  function fillCheckboxes(e) {
+    console.log(e.shiftKey)
+    if (shiftKeyPressed) {
+      // get the values of each checkbox in an array. Updates with each checkbox change
+      const checkboxValues = Array.from(checkboxes).map((checkbox) => (checkbox.checked))
+      console.log(checkboxValues)
+
+      // gets the index position in the array of the first and last checked checkbox (where checked === true)
+      let firstCheckbox = checkboxValues.findIndex((checkbox) => checkbox === true)
+      let lastCheckbox = checkboxValues.findLastIndex((checkbox) => checkbox === true)
+      // console.log(firstCheckbox)
+      // console.log(lastCheckbox)
+
+      // loop through each position between the index position of the two checkboxes, and check them. 
+      for (let step = firstCheckbox+1; step < lastCheckbox; step++) {
+        console.log(step)
+        checkboxes[step].checked = true
+      }
+    } else {
+      console.info("Shift key not pressed")
+    }
+
+  }
+
+
+
+  
+  console.log(checkboxes)
+
 </script>
 </body>
 </html>
