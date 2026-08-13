@@ -7,6 +7,7 @@ const progressBar = player.querySelector(".progress__filled")
 const toggle = player.querySelector(".toggle")
 const skipButtons = player.querySelectorAll("[data-skip]") // notice these use querySelectorAll as there are multiple
 const ranges = player.querySelectorAll(".player__slider") // we can batch the two sliders into one callback loop, and update either by getting the target value. e.g. e.target.name
+const playerTime = player.querySelector(".player__time")
 
 let r = document.querySelector(":root") // get the root element
 let playing = false; // a flag we will toggle later.
@@ -14,7 +15,7 @@ let timeElapsed = 0
 let elapsedPercent
 
 //console.log(video)
-console.dir(video) /* see what we can do with the element (scroll down and expand 'proto type' for the methods*/
+// console.dir(video) /* see what we can do with the element (scroll down and expand 'proto type' for the methods*/
 
 
 /* Build out functions */
@@ -59,8 +60,20 @@ video.addEventListener("timeupdate", (e) => {
     timeElapsed = video.currentTime
     elapsedPercent = (timeElapsed/video.duration)*100
     r.style.setProperty("--elapsed-percent", elapsedPercent+"%")
-    console.log(elapsedPercent)
-    
+    let mins = Math.floor(timeElapsed / 60) // divides seconds by 60 to get minutes and floor always rounds down
+    let seconds = Math.round(timeElapsed % 60) // % is the mod operator and always gets the remainder after the division. So gives us seconds in this case
+    // tidy mins and seconds to show leading zeroes ('01' instead of '1'), and round 60 to 0 for seconds
+    // these are ternary if statments (condition ? exprIfTrue : exprIfFalse)
+    mins = parseInt(mins) < 10 ? "0"+mins : mins
+    seconds = parseInt(seconds) < 10 ? "0"+seconds : seconds
+    seconds = parseInt(seconds) === 60 ? "00" : seconds
+
+    // You could also use padStart, to pad anything with less than 2 digits with a zero at the start
+    // mins = String(mins).padStart(2, '0');
+    // seconds = String(seconds).padStart(2, '0');
+
+    playerTime.innerText = mins + " : " + seconds
+    console.log(playerTime)
 })
 
 skipButtons.forEach(skipButton => {
@@ -81,4 +94,26 @@ ranges.forEach(range => {
             video.playbackRate = e.target.value
         }
     })
+})
+
+// use a helper flag if mouse clicked down. So we can only scrub the video if mouse clicked
+let mousedown = false;
+
+progress.addEventListener("mousedown", (e) => mousedown = true)
+progress.addEventListener("mouseup", (e) => mousedown = false)
+
+// add event listener for progress bar so we can get the mouse coordintaes
+progress.addEventListener("mousemove", (e) => {
+    // console.dir(progress) // we can use console.dir to get the prototype and find out we can use this to get the width
+    // use the offset x divided by the total x to get how far the mouse is along the bar
+    let scrub = (e.offsetX / progress.offsetWidth) // how far into the video we should scrub between 0-1, e.g. 0.7 for 70%
+    if (mousedown === true) {
+        video.currentTime = video.duration * scrub
+    }
+})
+
+// the above uses mousemove so will only work on click+drag. Add a click event listener to scrub on click
+progress.addEventListener("click", (e) => {
+    let scrub = (e.offsetX / progress.offsetWidth) // how far into the video we should scrub between 0-1, e.g. 0.7 for 70%
+    video.currentTime = video.duration * scrub
 })

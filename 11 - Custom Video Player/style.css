@@ -48,6 +48,20 @@ body {
   width: 100%;
 }
 
+.player__time {
+  background: none;
+  border: 0;
+  color: white;
+  text-align: left;
+  outline: 0;
+  padding: 0;
+  cursor: pointer;
+  max-width: 50px;
+  font-size: 15px; /* override font size: 0px from parent .player class */
+  margin: 0; /* Kills the default spacing */
+  align-self: center; /* Keeps it vertically centered */
+}
+
 .player__button {
   background: none;
   border: 0;
