@@ -7,6 +7,19 @@
     <link rel="icon" href="https://fav.farm/🔥" />
   </head>
   <body>
-    <script></script>
+    <script>
+      let keysPressed = []
+      let secretWord = "luke"
+
+      // push key press into an array, and keep only last 4 characters of this array. 
+      window.addEventListener("keypress", (e) => {keysPressed.push(e.key)
+        keysPressed = keysPressed.slice(-4) // keep only last 4 characters
+        if (keysPressed.join(separator="") === secretWord) {
+          console.log("SECRETS UNLOCKED!")
+          cornify_add() // calls the cornify_add() function defined in the cornify.js file we sourced with a script tag earlier. 
+        }
+      })
+
+    </script>
   </body>
 </html>
