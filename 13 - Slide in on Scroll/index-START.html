@@ -58,8 +58,48 @@
         if (callNow) func.apply(context, args);
       };
     }
+    let images = document.querySelectorAll(".slide-in")
 
-  </script>
+    // event listener to run detect function on scroll
+
+    function isImageInView() {
+      // loop through each image element and apply the logic
+      // console.log(images[1].getBoundingClientRect().top - window.innerHeight )
+      // console.log(images[1].getBoundingClientRect().bottom)
+      images.forEach((e) => {
+        let rect = e.getBoundingClientRect() // gets coordinates of image relative to scroll position
+        // check if the top of the image minus the viewport height is less than 0 (top of image is in view) AND thta the bottom of the image is greater than 0 (bottom of the image still visible once scrolled past)
+        if (rect.top - window.innerHeight <= 0 && rect.bottom >= 0) { // rec.top starts as a negative number, until you scroll to the image, then it becomes positive. 
+          e.classList.add("active") // if top of image appears (i.e. rect.top is 0 or more) then add active class for slide in transition
+        } else {  // otherwise remove class (e.g. if bottom is no longer greater than 0 (bottom becomes negative when you scroll past the image )
+          e.classList.remove("active")
+        }
+      })
+    }
+
+    document.addEventListener("scroll", debounce(isImageInView)) // call with debounce wrapper so we only call every 20ms instead of on each scroll, for better performance. 
+    
+    // above is my challenge attempt using stackoverflow answers and mdn docs. Also see below for a more modern solution from gemini with the newer InteractionObserver API
+
+    /* NOTE: Modern solution with newer IntersectionObserver API - Instead of listening for scroll events and calculating math, you simply ask the browser to notify you when an element enters or leaves the viewport. 
+    const images = document.querySelectorAll(".slide-in");
+
+    // 1. Define the observer
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        // entry.isIntersecting is a boolean provided by the browser
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+        } else {
+          entry.target.classList.remove("active");
+        }
+      });
+    });
+
+    // 2. Tell it to watch your images
+    images.forEach(image => observer.observe(image));
+    */ 
+    </script>
 
   <style>
     html {
