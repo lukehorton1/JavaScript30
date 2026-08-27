@@ -10,16 +10,50 @@
   <script>
     // start with strings, numbers and booleans
 
+    // you can make copies of strings, numbers and booleans by just assigning the old variable to a new name
+    let name1 = "Luke"
+    let name2 = name1
+
+    name2 = "John" // reassign (copy) just 'name2', leaving 'name1' as is 
+
+    console.log(name1) // still returns "Luke"
+    console.log(name2) // now returns "John"
+
+    let num1 = 1
+    let num2 = num1
+
+    num2 = 2 // reassign (copy) just 'num2', leaving 'num1' as is 
+    
+    console.log(num1) // still returns 1
+    console.log(num2) // now returns 2
+
+    let bool1 = true
+    let bool2 = bool1
+
+    bool2 = false // reassign (copy) just 'bool2', leaving 'bool1' as is
+    
+    console.log(bool1) // still returns true
+    console.log(bool2) // now returns false
+
+
     // Let's say we have an array
     const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
 
     // and we want to make a copy of it.
 
     // You might think we can just do something like this:
+    let team = players
+    
+    console.log(players) // returns ['Wes', 'Sarah', 'Ryan', 'Poppy']
+    console.log(team) // also returns ['Wes', 'Sarah', 'Ryan', 'Poppy']
 
     // however what happens when we update that array?
+    team[2] = "LUKE"
 
     // now here is the problem!
+    console.log(players) // uh oh, the original players array now also returns ['Wes', 'Sarah', 'LUKE', 'Poppy']
+
+    team[2] = 'Ryan' // lets change it back...
 
     // oh no - we have edited the original array too!
 
@@ -28,10 +62,20 @@
     // So, how do we fix this? We take a copy instead!
 
     // one way
+    const team1 = Array.from(players)
+    team1[4] = "array"
+    team1[5] = "from"
+    console.log(team1) // see... editing team1 didn't edit the original array. 
 
     // or create a new array and concat the old one in
+    const team2 = [].concat(players)
+    team2[4] = "concat"
+    console.log(team2)
 
-    // or use the new ES6 Spread
+    // or use the new ES6 Spread to spread our players iterable into new array
+    const team3 = [...players]
+    team3[4] = "spread"
+    console.log(team3)
 
     // now when we update it, the original one isn't changed
 
@@ -44,10 +88,27 @@
     };
 
     // and think we make a copy:
+    const captain = person
+    captain.number = 99
+
+    // we've made captain a reference to person, so editing captain also edits the original person object. 
+    console.log(person)
+    console.log(captain)
+
+    captain.number = 80 // let's change it back
 
     // how do we take a copy instead?
+    // using Object.assign()
+    // we first pass an empty object '{}', pass it the object we wish to copy the properties from 'person', and finally fold in the properties which we wish to overwrite '{number: 99}' 
+    const captain1 = Object.assign({}, person, {number:99})
 
-    // We will hopefully soon see the object ...spread
+    console.log(person) // returns {name: 'Wes Bos', age: 80}
+    console.log(captain1) // returns {name: 'Wes Bos', age: 80, number: 99}
+
+    // More recently, we can also use ...spread
+    // this spreads the properties of 'person' into a new object, and then adds the property 'number: 99' to that new object.
+    const captain2 = {...person, number: 99} 
+    console.log(captain2) // returns {name: 'Wes Bos', age: 80, number: 99}
 
     // Things to note - this is only 1 level deep - both for Arrays and Objects. lodash has a cloneDeep method, but you should think twice before using it.
 
