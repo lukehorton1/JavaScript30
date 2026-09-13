@@ -31,6 +31,40 @@
   const itemsList = document.querySelector('.plates');
   const items = [];
 
+  // update our html list with the new items array. 
+  function updateItemsList() {
+    // .map() allows us to apply a function to each element in the array. 
+    // In this case, we're adding the surrounding html to display in our itemsList. 
+    displayItems = items.map((item) => {
+      return `
+      <input type='checkbox' name='${item.name}' id='${item.name}' value='${item.name}'>
+      <label for='${item.name}'>${item.name}</label><br>
+      ` // use backticks for an f-string equivalent
+    }).join("") 
+
+    itemsList.innerHTML = displayItems // display the html in our list element. 
+  }
+
+  function addItem(e) {
+    e.preventDefault() // stops page refreshing on form submission
+    let itemName = this.querySelector("[name=item]") // we can use this instead of document. so we can target the form that calls this function. 
+    items.push(
+      {
+        "name" : itemName.value,
+        "taco" : false
+      }
+    )
+  updateItemsList() // use helper to update items list html
+  addItems.querySelector("[name=item]").value = "" // reset text input on submit
+  }
+
+
+
+  // since we're using a form, we can use a listener for on submit, rather than just listening to a button. This will allow us to listen for submit button pressed, or enter key pressed. 
+  document.addEventListener("submit", addItem)
+
+  
+
 </script>
 
 
