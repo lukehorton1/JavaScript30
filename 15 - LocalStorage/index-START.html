@@ -24,12 +24,15 @@
       <input type="text" name="item" placeholder="Item Name" required>
       <input type="submit" value="+ Add Item">
     </form>
+    <input type="button" name="clear" id="clear-btn" value="Clear">
   </div>
 
 <script>
   const addItems = document.querySelector('.add-items');
   const itemsList = document.querySelector('.plates');
-  const items = [];
+  const clearBtn = document.getElementById("clear-btn")
+
+  let items = [];
 
   // update our html list with the new items array. 
   function updateItemsList() {
@@ -37,13 +40,30 @@
     // In this case, we're adding the surrounding html to display in our itemsList. 
     displayItems = items.map((item) => {
       return `
-      <input type='checkbox' name='${item.name}' id='${item.name}' value='${item.name}'>
+      <li>
+      <input type='checkbox' name='${item.name}' id='${item.name}' value='${item.name}' ${item.taco ? 'checked' : ''}>
       <label for='${item.name}'>${item.name}</label><br>
+      </li>
       ` // use backticks for an f-string equivalent
     }).join("") 
 
     itemsList.innerHTML = displayItems // display the html in our list element. 
   }
+
+  // clear items from local storage and ui
+  function clearItems() {
+    localStorage.clear()
+    items = []
+    updateItemsList()
+  }
+
+  if (localStorage.getItem("items")) { // check local storage for items list and update ui if found
+    items = JSON.parse(localStorage.getItem("items"))
+    updateItemsList()
+  } // NOTE: localStorage allows us to persist values even after refreshing. However, it only supports strings. 
+    // So we use JSON.stringify() to store arrays, and then JSON.parse() to parse back into an array 
+
+
 
   function addItem(e) {
     e.preventDefault() // stops page refreshing on form submission
@@ -54,16 +74,33 @@
         "taco" : false
       }
     )
-  updateItemsList() // use helper to update items list html
-  addItems.querySelector("[name=item]").value = "" // reset text input on submit
+    updateItemsList() // use helper to update items list html
+    addItems.querySelector("[name=item]").value = "" // reset text input on submit
+    localStorage.setItem("items", JSON.stringify(items)) // store in local storage
   }
 
+  // toggles taco status in items array
+  function toggleTaco(e) {
+    items.map((item) => { // uses map to apply function to each item in array
+      if (item.name === e.target.value) { // checks if item name matches event (checkbox checked) and toggles taco 
+        item.taco = !item.taco
+        localStorage.setItem("items", JSON.stringify(items))
+      }
+    })
+  }
 
+  // Event delegation --
+  // this means we can have event listeners for checkboxes not yet created using if (e.target.matches("input[type='checkbox']"))
+  itemsList.addEventListener("click", (e) => { // watch for any click in itemsList
+    if (e.target.matches("input[type='checkbox']")) { // if clicked target is checkbox, then toggle taco for that checkbox
+      toggleTaco(e) // this toggles the 'taco' value in the array
+    }
+  })
 
   // since we're using a form, we can use a listener for on submit, rather than just listening to a button. This will allow us to listen for submit button pressed, or enter key pressed. 
   document.addEventListener("submit", addItem)
+  clearBtn.addEventListener("click", clearItems)  
 
-  
 
 </script>
 
